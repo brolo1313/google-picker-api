@@ -3,6 +3,11 @@ import { Component, OnInit } from '@angular/core';
 declare const gapi: any;
 declare const google: any;
 
+export enum GoogleDriveScopes {
+  DriveMetadataReadonly = 'https://www.googleapis.com/auth/drive.metadata.readonly',
+  DriveFile = 'https://www.googleapis.com/auth/drive.file',
+}
+
 @Component({
   selector: 'app-google-picker',
   templateUrl: './google-picker.component.html',
@@ -10,7 +15,10 @@ declare const google: any;
 })
 export class GooglePickerComponent implements OnInit {
   // Authorization scopes required by the API
-  private readonly SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+  private readonly SCOPES: GoogleDriveScopes[] = [
+    GoogleDriveScopes.DriveMetadataReadonly,
+    GoogleDriveScopes.DriveFile
+  ];
 
   // Replace with your own client ID, API key, and app ID
   private readonly CLIENT_ID = '<CLIENT_ID>';
@@ -46,7 +54,7 @@ export class GooglePickerComponent implements OnInit {
   private loadGis(): void {
     this.tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: this.CLIENT_ID,
-      scope: this.SCOPES,
+      scope: this.SCOPES.join(' '),
       callback: '', // Defined later
     });
     this.gisInited = true;
@@ -80,7 +88,12 @@ export class GooglePickerComponent implements OnInit {
         signoutButton.style.visibility = 'visible';
         authorizeButton.innerText = 'Refresh';
       }
+
+      //first scope
       await this.createPicker();
+
+      //second scope
+      await this.checkDriveFileScope();
     };
 
     if (this.accessToken === null) {
@@ -89,6 +102,29 @@ export class GooglePickerComponent implements OnInit {
     } else {
       // Skip account chooser and consent dialog for an existing session
       this.tokenClient.requestAccessToken({ prompt: '' });
+    }
+  }
+
+  private async checkDriveFileScope(): Promise<void> {
+    if (this.accessToken) {
+      try {
+        // Let's try to create an empty text file on Google Drive to check access to `drive.file`.
+        const fileMetadata = {
+          'name': 'test-file.txt',
+          'mimeType': 'text/plain'
+        };
+
+        const file = await gapi.client.drive.files.create({
+          resource: fileMetadata,
+          fields: 'id'
+        });
+
+        console.log('File created successfully with ID:', file.result.id);
+        alert('File created successfully! This confirms that you have the necessary permissions for drive.file.');
+      } catch (error) {
+        console.error('Error creating file:', error);
+        alert('Error creating file! It seems there is an issue with the drive.file scope.');
+      }
     }
   }
 

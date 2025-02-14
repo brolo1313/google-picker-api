@@ -7,8 +7,8 @@ declare var gapi: any;
 })
 export class GoogleDriveService {
 
-  private CLIENT_ID = '64531276471-rsgodsdm2879qssn0kvo3pkmtni0q1d5.apps.googleusercontent.com'; // Replace with your Client ID
-  private API_KEY = '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'; // Replace with your API Key
+  private CLIENT_ID = '<CLIENT_ID>'; // Replace with your Client ID
+  private API_KEY = '<API_KEY>'; // Replace with your API Key
   private SCOPES = 'https://www.googleapis.com/auth/drive.readonly'; // Scope for reading files
 
   private authInstance: any;

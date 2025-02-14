@@ -14,7 +14,7 @@ export class GooglePickerComponent implements OnInit {
 
   // Replace with your own client ID, API key, and app ID
   private readonly CLIENT_ID = '<CLIENT_ID>';
-  private readonly API_KEY = '<AIzaSyCWKJ7tpqnrkhHKc-QHNuxlml0YLh0wq6w>';
+  private readonly API_KEY = '<API_KEY>';
   private readonly APP_ID = '<YOUR_APP_ID>';
 
   private tokenClient: any;
